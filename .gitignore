@@ -1,0 +1,3 @@
+/libfxcg/misc/*.o
+/libc/*.o
+/libfxcg/syscalls/*.o
