@@ -7,7 +7,7 @@ ifeq ($(strip $(FXCGSDK)),)
 export FXCGSDK := $(realpath ../../)
 endif
 
-include $(FXCGSDK)/common/prizm_rules
+include $(FXCGSDK)/common/util_rules
 
 
 #---------------------------------------------------------------------------------
@@ -18,17 +18,14 @@ include $(FXCGSDK)/common/prizm_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	$(CONFIG)
-SOURCES		:=	src src/zx7 src/ptune2_simple
-DATA		:=	data  
+SOURCES		:=	src
 INCLUDES	:=
 
 #---------------------------------------------------------------------------------
-# options for code and add-in generation
+# options for code and library generation
 #---------------------------------------------------------------------------------
 
-MKG3AFLAGS := -n basic:example -i uns:../unselected.bmp -i sel:../selected.bmp
-
-CFLAGS	= -O2 \
+CFLAGS	= -Os \
 		  -Wall \
 		  -funroll-loops \
 		  -fno-trapping-math \
@@ -36,7 +33,7 @@ CFLAGS	= -O2 \
 		  -Wno-switch \
 		  $(MACHDEP) $(INCLUDE) $(DEFINES)
 
-CXXFLAGS	=	$(CFLAGS) \
+CXXFLAGS =	$(CFLAGS) \
 		  -fpermissive \
 		  -fno-rtti \
 		  -fno-exceptions \
@@ -45,14 +42,7 @@ CXXFLAGS	=	$(CFLAGS) \
 
 ASFLAGS	=	$(CFLAGS) 
 
-# add -S -fverbose-asm for assembly output
-
 LDFLAGS	= $(MACHDEP) -O2 -T$(FXCGSDK)/common/prizm.ld -Wl,-static -Wl,-gc-sections
-
-#---------------------------------------------------------------------------------
-# any extra libraries we wish to link with the project
-#---------------------------------------------------------------------------------
-LIBS	:=	-lfxcg -lgcc -lm -lc
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
@@ -60,18 +50,9 @@ LIBS	:=	-lfxcg -lgcc -lm -lc
 #---------------------------------------------------------------------------------
 LIBDIRS	:=
 
-#---------------------------------------------------------------------------------
-# no real need to edit anything past this point unless you need to add additional
-# rules for different file extensions
-#---------------------------------------------------------------------------------
 ifneq ($(BUILD),$(notdir $(CURDIR)))
-#---------------------------------------------------------------------------------
 
-export OUTPUT		:=	$(CURDIR)/$(BUILD)/$(TARGET)
-
-export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
-					$(foreach dir,$(DATA),$(CURDIR)/$(dir))
-
+export OUTPUT	:=	$(CURDIR)/../lib/lib$(TARGET)
 export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 
 #---------------------------------------------------------------------------------
@@ -80,7 +61,6 @@ export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.S)))
-BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
 
 #---------------------------------------------------------------------------------
 # use CXX for linking C++ projects, CC for standard C
@@ -91,26 +71,18 @@ else
 	export LD	:=	$(CXX)
 endif
 
-export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
-					$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) \
-					$(SFILES:.S=.o)
-
 #---------------------------------------------------------------------------------
 # build a list of include paths
 #---------------------------------------------------------------------------------
 export INCLUDE	:=	$(foreach dir,$(INCLUDES), -iquote $(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
-					-I$(CURDIR)/$(BUILD) -I$(LIBFXCG_INC) -I$(UTILS_INC)
-
-#---------------------------------------------------------------------------------
-# build a list of library paths
-#---------------------------------------------------------------------------------
-export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib) \
-					-L$(FXCGSDK)/utils/lib \
-					-L$(LIBFXCG_LIB) 
+					-I$(CURDIR)/$(BUILD) -I$(LIBFXCG_INC) -I$(CURDIR)
 					
-export OUTPUT		:=	$(CURDIR)/$(BUILD)/$(TARGET)
-export OUTPUT_FINAL		:=	$(CURDIR)/$(TARGET)
+export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir))
+					
+export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
+					$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) \
+					$(SFILES:.S=.o)
 .PHONY: $(BUILD) clean
 
 #---------------------------------------------------------------------------------
@@ -121,7 +93,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 export CYGWIN := nodosfilewarning
 clean:
-	$(RM) -fr $(BUILD) $(OUTPUT).bin $(OUTPUT_FINAL).g3a
+	$(RM) -fr $(BUILD) $(OUTPUT).a $(OFILES)
 
 #---------------------------------------------------------------------------------
 else
@@ -131,13 +103,10 @@ DEPENDS	:=	$(OFILES:.o=.d)
 #---------------------------------------------------------------------------------
 # main targets
 #---------------------------------------------------------------------------------
-$(OUTPUT_FINAL).g3a: $(OUTPUT).bin
-	$(MKG3A) $(MKG3AFLAGS) $< $@
-	
-$(OUTPUT).bin: $(OFILES) 
+$(OUTPUT).a: $(OFILES)
 
 -include $(DEPENDS)
 
 #---------------------------------------------------------------------------------
 endif
-#---------------------------------------------------------------------------------
+
