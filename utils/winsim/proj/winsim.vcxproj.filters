@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\fxcg">
+      <UniqueIdentifier>{81f25d03-206f-4091-94fb-385fc0d7b7dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="zx7">
+      <UniqueIdentifier>{7e9b126b-5292-48f8-9c3a-497521f2770e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="calctype">
+      <UniqueIdentifier>{92617692-7833-444c-9ec1-d812663cf106}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\prizmsim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\winmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\calctype\src\calctype_prizm.c">
+      <Filter>calctype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\calctype\src\calctype.c">
+      <Filter>calctype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\zx7\src\optimize.c">
+      <Filter>zx7</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\zx7\src\zx7.c">
+      <Filter>zx7</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\zx7\src\compress.c">
+      <Filter>zx7</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\zx7\src\dzx7.c">
+      <Filter>zx7</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\prizmsim.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\prizmfont.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fxcg\registers.h">
+      <Filter>Header Files\fxcg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fxcg\rtc.h">
+      <Filter>Header Files\fxcg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fxcg\serial.h">
+      <Filter>Header Files\fxcg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fxcg\system.h">
+      <Filter>Header Files\fxcg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fxcg\misc.h">
+      <Filter>Header Files\fxcg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fxcg\app.h">
+      <Filter>Header Files\fxcg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fxcg\display.h">
+      <Filter>Header Files\fxcg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fxcg\file.h">
+      <Filter>Header Files\fxcg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fxcg\heap.h">
+      <Filter>Header Files\fxcg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fxcg\keyboard.h">
+      <Filter>Header Files\fxcg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\zx7\zx7.h">
+      <Filter>zx7</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\calctype\calctype.h">
+      <Filter>calctype</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\README.md" />
+  </ItemGroup>
+</Project>

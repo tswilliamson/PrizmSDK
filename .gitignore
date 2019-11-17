@@ -1,3 +1,7 @@
 /libfxcg/misc/*.o
 /libc/*.o
 /libfxcg/syscalls/*.o
+/utils/winsim/proj/.vs
+/utils/winsim/proj/WindowsSim
+/utils/calctype/DeviceRelease
+/utils/winsim/proj/winsim.vcxproj.user
