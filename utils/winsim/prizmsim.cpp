@@ -559,6 +559,7 @@ void MsgBoxPop()
 
 static char romPath[256] = { 0 };
 static char ramPath[256] = { 0 };
+static char devPath[256] = { 0 };
 
 static void ResolvePaths() {
 	if (romPath[0] == 0) {
@@ -573,26 +574,41 @@ static void ResolvePaths() {
 
 			// prizm ram files go in My Documents / Prizm / RAM
 			strcat(ramPath, "\\Prizm\\RAM\\");
+
+			// should point to main project directory for most projects (working dir in VS debug set to .vcxproj directory)
+			strcpy(devPath, "..\\");
 		}
 	}
 }
 
 static bool ResolveROMPath(const unsigned short* prizmPath, char* intoPath) {
+	// construct path to ROM in Windows docs
+	ResolvePaths();
+
 	char filename[256];
 	WideCharToMultiByte(CP_ACP, 0, (LPWSTR)prizmPath, -1, (LPSTR)filename, 256, NULL, NULL);
 
 	// must begin with filesystem path
-	if (strncmp(filename, "\\\\fls0\\", 7)) {
-		return false;
+	if (!strncmp(filename, "\\\\fls0\\", 7)) {
+		memmove(&filename[0], &filename[7], 256 - 7);
+
+		strcpy(intoPath, romPath);
+		strcat(intoPath, filename);
+
+		return true;
 	}
-	memmove(&filename[0], &filename[7], 256 - 7);
 
-	// construct path to ROM in Windows docs
-	ResolvePaths();
-	strcpy(intoPath, romPath);
-	strcat(intoPath, filename);
+	// special dev0 path for winsim only stuff for files that point to home directory of project
+	if (!strncmp(filename, "\\\\dev0\\", 7)) {
+		memmove(&filename[0], &filename[7], 256 - 7);
 
-	return true;
+		strcpy(intoPath, devPath);
+		strcat(intoPath, filename);
+
+		return true;
+	}
+
+	return false;
 }
 
 int Bfile_OpenFile_OS(const unsigned short *filenameW, int mode, int null) {

@@ -65,7 +65,7 @@ static void write_elias_gamma(int value) {
     }
 }
 
-unsigned char *compress(Optimal *optimal, unsigned char *input_data, unsigned int input_size, long skip, unsigned int *output_size) {
+unsigned char *compress(Optimal *optimal, const unsigned char *input_data, unsigned int input_size, long skip, unsigned int *output_size) {
     unsigned int input_index;
     unsigned int input_prev;
     int offset1;

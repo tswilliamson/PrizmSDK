@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-static unsigned char *d_input_data;
+static const unsigned char *d_input_data;
 static unsigned char *d_output_data;
 static unsigned int d_input_index;
 static unsigned int d_output_index;
@@ -96,11 +96,11 @@ void d_write_bytes(int offset, int length) {
     }
 }
 
-unsigned int ZX7GetDecompressedSize(unsigned char* compressedData) {
+unsigned int ZX7GetDecompressedSize(const unsigned char* compressedData) {
 	return compressedData[0] * 65536 + compressedData[1] * 256 + compressedData[2];
 }
 
-int ZX7Decompress(unsigned char* srcData, unsigned char* destData, unsigned int destLength) {
+int ZX7Decompress(const unsigned char* srcData, unsigned char* destData, unsigned int destLength) {
 	if (destLength < ZX7GetDecompressedSize(srcData) || !srcData || !destData) {
 		return -1;
 	}

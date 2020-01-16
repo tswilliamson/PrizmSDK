@@ -49,7 +49,7 @@ static int count_bits(int offset, int len) {
     return 1 + (offset > 128 ? 12 : 8) + elias_gamma_bits(len-1);
 }
 
-Optimal* optimize(unsigned char *input_data, unsigned int input_size, unsigned long skip) {
+Optimal* optimize(const unsigned char *input_data, unsigned int input_size, unsigned long skip) {
     unsigned int *min;
     unsigned int *max;
     unsigned int *matches;

@@ -40,22 +40,22 @@ typedef struct optimal_t {
 #define MAX_OFFSET  2176  /* range 1..2176 */
 #define MAX_LEN    65536  /* range 2..65536 */
 
-Optimal *optimize(unsigned char *input_data, unsigned int input_size, unsigned long skip);
+Optimal *optimize(const unsigned char *input_data, unsigned int input_size, unsigned long skip);
 
-unsigned char *compress(Optimal *optimal, unsigned char *input_data, unsigned int input_size, long skip, unsigned int *output_size);
+unsigned char *compress(Optimal *optimal, const unsigned char *input_data, unsigned int input_size, long skip, unsigned int *output_size);
 
 // THOMAS : added these for my use:
 
 // ZX7 Compress the given data, outData is malloc'd and the return value is the length (first 3 bytes of data will be 24-bit size result for convenience)
-unsigned int ZX7Compress(unsigned char *srcData, unsigned int inLength, unsigned char** outData);
+unsigned int ZX7Compress(const unsigned char *srcData, unsigned int inLength, unsigned char** outData);
 
 #endif
 
 // Get decompressed size of ZX7Compress'd data
-unsigned int ZX7GetDecompressedSize(unsigned char* compressedData);
+unsigned int ZX7GetDecompressedSize(const unsigned char* compressedData);
 
 // Decompress the given data. Returns 0 with no errors
-int ZX7Decompress(unsigned char* srcData, unsigned char* destData, unsigned int destLength);
+int ZX7Decompress(const unsigned char* srcData, unsigned char* destData, unsigned int destLength);
 
 #ifdef __cplusplus
 }

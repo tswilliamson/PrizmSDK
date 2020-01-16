@@ -5,3 +5,7 @@
 /utils/winsim/proj/WindowsSim
 /utils/calctype/DeviceRelease
 /utils/winsim/proj/winsim.vcxproj.user
+/utils/calctype/Tool/*.user
+/utils/calctype/Tool/bin/Release/*.pdb
+/utils/calctype/Tool/.vs
+/utils/calctype/Tool/obj
