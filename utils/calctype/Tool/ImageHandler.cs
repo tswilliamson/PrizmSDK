@@ -44,7 +44,13 @@ namespace CalcTyper
             _bitmapPath = saveFilePath;
             if (System.IO.File.Exists(saveFilePath))
                 System.IO.File.Delete(saveFilePath);
-            _currentBitmap.Save(saveFilePath);
+
+            if (saveFilePath.ToLower().EndsWith("bmp"))
+            {
+                _currentBitmap.Save(saveFilePath, System.Drawing.Imaging.ImageFormat.Bmp);
+            } else {
+                _currentBitmap.Save(saveFilePath, System.Drawing.Imaging.ImageFormat.Png);
+            }
         }
 
         private double luminance(Color forColor)
@@ -59,7 +65,7 @@ namespace CalcTyper
 
         public Bitmap SubPixel(Bitmap onBitmap, bool isVertical, bool isBGR, bool isText)
         {
-            float maxBias = isText ? 0.4f : 0.0f;
+            float maxBias = isText ? 0.4f : 0.25f;
 
             Bitmap temp = (Bitmap)onBitmap;
             if (isVertical) {
@@ -95,6 +101,7 @@ namespace CalcTyper
                     // average color for current pixel
                     double maxRed = 0, maxGreen = 0, maxBlue = 0;
                     double allAvgRed = 0, allAvgGreen = 0, allAvgBlue = 0;
+
                     for (int sy = 0; sy < 3; sy++)
                     {
                         double avgRed = 0;
@@ -102,9 +109,10 @@ namespace CalcTyper
                         double avgBlue = 0;
                         for (int sx = 0; sx < 3; sx++)
                         {
-                            avgRed += colorMat[sx + 2, sy].R;
-                            avgGreen += colorMat[sx + 2, sy].G;
-                            avgBlue += colorMat[sx + 2, sy].B;
+                            Color curColor = colorMat[sx + 2, sy];
+                            avgRed += curColor.R;
+                            avgGreen += curColor.G;
+                            avgBlue += curColor.B;
                         }
                         avgRed = avgRed / 3.0;
                         avgGreen = avgGreen / 3.0;
@@ -118,10 +126,11 @@ namespace CalcTyper
                         maxGreen = Math.Max(maxGreen, avgGreen);
                         maxBlue = Math.Max(maxBlue, avgBlue);
                     }
-                    double red = (maxRed * maxBias + allAvgRed * (1.0 - maxBias));
-                    double green = (maxGreen * maxBias + allAvgGreen * (1.0 - maxBias));
-                    double blue = (maxBlue * maxBias + allAvgBlue * (1.0 - maxBias));
 
+                    double red = (maxRed * maxBias + allAvgRed * (1.0 - maxBias)) + (0.5 / 255);
+                    double green = (maxGreen * maxBias + allAvgGreen * (1.0 - maxBias)) + (0.5 / 255);
+                    double blue = (maxBlue * maxBias + allAvgBlue * (1.0 - maxBias)) + (0.5 / 255);
+                
                     // determine the luminance of each local energy column
                     for (int c = 0; c < 7; c++)
                     {
@@ -131,20 +140,30 @@ namespace CalcTyper
                     }
                     double avgLum = (lum[2] + lum[3] + lum[4]) / 3.0;
 
+                    double[] columnWeight = { 1.0, 2.0, 3.0, 2.0, 1.0 };
+                    double divisor = 0.0f;
+                    for (int i = 0; i < 5; i++)
+                    {
+                        divisor += columnWeight[i];
+                    }
+                    divisor *= avgLum;
+
                     if (!isBGR)
                     {
-                        red *= (lum[0] + lum[1] * 2 + lum[2] * 3 + lum[3] * 2 + lum[4]) / 9.0 / avgLum;
-                        green *= (lum[1] + lum[2] * 2 + lum[3] * 3 + lum[4] * 2 + lum[5]) / 9.0 / avgLum;
-                        blue *= (lum[2] + lum[3] * 2 + lum[4] * 3 + lum[5] * 2 + lum[6]) / 9.0 / avgLum;
+                        red *=   (lum[0] * columnWeight[0] + lum[1] * columnWeight[1] + lum[2] * columnWeight[2] + lum[3] * columnWeight[3] + lum[4] * columnWeight[4]) / divisor;
+                        green *= (lum[1] * columnWeight[0] + lum[2] * columnWeight[1] + lum[3] * columnWeight[2] + lum[4] * columnWeight[3] + lum[5] * columnWeight[4]) / divisor;
+                        blue *=  (lum[2] * columnWeight[0] + lum[3] * columnWeight[1] + lum[4] * columnWeight[2] + lum[5] * columnWeight[3] + lum[6] * columnWeight[4]) / divisor;
                     }
                     else
                     {
-                        red *= (lum[2] + lum[3] * 2 + lum[4] * 3 + lum[5] * 2 + lum[6]) / 9.0 / avgLum;
-                        green *= (lum[1] + lum[2] * 2 + lum[3] * 3 + lum[4] * 2 + lum[5]) / 9.0 / avgLum;
-                        blue *= (lum[0] + lum[1] * 2 + lum[2] * 3 + lum[3] * 2 + lum[4]) / 9.0 / avgLum;
+                        red *=   (lum[2] * columnWeight[0] + lum[3] * columnWeight[1] + lum[4] * columnWeight[2] + lum[5] * columnWeight[3] + lum[6] * columnWeight[4]) / divisor;
+                        green *= (lum[1] * columnWeight[0] + lum[2] * columnWeight[1] + lum[3] * columnWeight[2] + lum[4] * columnWeight[3] + lum[5] * columnWeight[4]) / divisor;
+                        blue *=  (lum[0] * columnWeight[0] + lum[1] * columnWeight[1] + lum[2] * columnWeight[2] + lum[3] * columnWeight[3] + lum[4] * columnWeight[4]) / divisor;
                     }
 
-                    bmap.SetPixel(x, y, System.Drawing.Color.FromArgb(255, (byte) red, (byte) green, (byte) blue));
+                    Color newColor = System.Drawing.Color.FromArgb(255, (byte)red, (byte)green, (byte)blue);
+
+                    bmap.SetPixel(x, y, newColor);
                 }
             }
 

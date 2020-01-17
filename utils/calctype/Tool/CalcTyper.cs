@@ -35,7 +35,7 @@ namespace CalcTyper
             sDlg = new SaveFileDialog(); // Save Dialog Initialization
             sDlg.RestoreDirectory = true;
             sDlg.FilterIndex = 1;
-            sDlg.Filter = "Image Files (*.jpg,*.gif,*.png,*.bmp)|*.jpg;*.gif;*.png;*.bmp";
+            sDlg.Filter = "Image Files (*.png,*.bmp)|*.png;*.bmp";
             /*************************/
             fontDlg = new OpenFileDialog(); // Open Dialog Initialization
             fontDlg.RestoreDirectory = true;
