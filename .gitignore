@@ -9,3 +9,4 @@
 /utils/calctype/Tool/bin/Release/*.pdb
 /utils/calctype/Tool/.vs
 /utils/calctype/Tool/obj
+/utils/calctype/Tool/bin/Debug
