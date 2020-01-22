@@ -111,6 +111,15 @@ void Bdisp_AreaClr(struct display_fill* area, unsigned char target, unsigned sho
 	}
 }
 
+static const int minTable[24] =
+{
+	0, 0, 0, 0, 6, 6, 6, 12,
+	18, 30, 42, 48, 60, 72, 84, 90,
+	96, 102, 108, 114, 120, 126, 132, 138
+};
+
+#define MAX(a,b) (((a)>(b))?(a):(b))
+
 // Actual OpenGL draw of CPU texture
 void DisplayGLUTScreen() {
 	static long long lastTicks = 0;
@@ -123,11 +132,28 @@ void DisplayGLUTScreen() {
 		lastTicks = curTicks;
 	}
 
+	// process VRAM (to match TFT display, ideally this is done in a shader later
+	unsigned char ProcessedDisplay[3 * 384 * 216];
+	unsigned short* color = &VRAM[0][0];
+	unsigned char* dstColor = &ProcessedDisplay[0];
+	for (int x = 0; x < 384 * 216; x++, color++, dstColor += 3) {
+		dstColor[0] = (*color & 0xF800) >> 8;
+		dstColor[1] = (*color & 0x07E0) >> 3;
+		dstColor[2] = (*color & 0x001F) << 3;
+
+		int energy = MAX(MAX(dstColor[0] * 5 / 6, dstColor[1] * 4 / 3), dstColor[2] * 3 / 4) >> 4;
+		int minColor = minTable[energy];
+		for (int y = 0; y < 3; y++) {
+			if (dstColor[y] < minColor) dstColor[y] = minColor;
+		}
+
+	}
+
 	GLenum i = glGetError();
 	glBindTexture(GL_TEXTURE_2D, screenTexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 384, 216, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, VRAM);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 384, 216, GL_RGB, GL_UNSIGNED_BYTE, ProcessedDisplay);
 
 	glPushMatrix();
 	glLoadIdentity();
