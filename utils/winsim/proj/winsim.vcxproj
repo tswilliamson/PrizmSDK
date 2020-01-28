@@ -13,7 +13,8 @@
     <ClCompile Include="..\..\zx7\src\dzx7.c" />
     <ClCompile Include="..\..\zx7\src\optimize.c" />
     <ClCompile Include="..\..\zx7\src\zx7.c" />
-    <ClCompile Include="..\prizmsim.cpp" />
+    <ClCompile Include="..\sim_file.cpp" />
+    <ClCompile Include="..\sim_misc.cpp" />
     <ClCompile Include="..\winmain.cpp" />
   </ItemGroup>
   <ItemGroup>

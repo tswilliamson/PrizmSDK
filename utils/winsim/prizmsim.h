@@ -25,3 +25,7 @@ int GetKey_SimFast(int keycode);
 #ifndef GL_UNSIGNED_SHORT_5_6_5
 #define GL_UNSIGNED_SHORT_5_6_5 0x8363
 #endif
+
+extern HDC renderContext;
+extern GLuint screenTexture;
+extern HWND GWnd;
