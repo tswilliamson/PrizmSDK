@@ -287,6 +287,10 @@ static int _v_printf(const char *fmt, va_list ap_in, writer_t writer, const void
     }
 out:
     va_end(ap);
+	
+	// null terminator
+	writer(warg, 0);
+	
     return count;
 }
 
