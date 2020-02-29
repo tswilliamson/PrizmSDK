@@ -169,6 +169,21 @@ int Bfile_CloseFile_OS(int handle) {
 	return 0;
 }
 
+int Bfile_DeleteEntry(const unsigned short *filename) {
+	InvalidateFullFile();
+
+	char docFilename[512];
+	if (!ResolveROMPath(filename, docFilename)) {
+		return -5;
+	}
+
+	if (DeleteFile(docFilename)) {
+		return 0;
+	}
+
+	return -1;
+}
+
 struct simFindData {
 	unsigned short id, type;
 	unsigned long fsize, dsize;

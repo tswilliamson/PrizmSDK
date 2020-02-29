@@ -81,6 +81,10 @@ void Bdisp_PutDisp_DD() {
 	glutMainLoopEvent();
 }
 
+void Bdisp_PutDisp_DD_stripe(int y1, int y2) {
+	Bdisp_PutDisp_DD();
+}
+
 void DrawFrame(int color) {
 	// does nothing
 }
