@@ -1,5 +1,5 @@
-#include <display_syscalls.h>
-#include <keyboard_syscalls.h>
+#include <fxcg/display.h>
+#include <fxcg/keyboard.h>
  
 void main(void) {
 	int key;
