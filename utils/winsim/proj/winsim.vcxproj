@@ -9,6 +9,9 @@
   <ItemGroup>
     <ClCompile Include="..\..\calctype\src\calctype.c" />
     <ClCompile Include="..\..\calctype\src\calctype_prizm.c" />
+    <ClCompile Include="..\..\ptune2_simple\src\Ptune2_direct.c" />
+    <ClCompile Include="..\..\snd\src\snd_prizm.cpp" />
+    <ClCompile Include="..\..\snd\src\snd_sim.cpp" />
     <ClCompile Include="..\..\zx7\src\compress.c" />
     <ClCompile Include="..\..\zx7\src\dzx7.c" />
     <ClCompile Include="..\..\zx7\src\optimize.c" />
@@ -19,6 +22,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\calctype\calctype.h" />
+    <ClInclude Include="..\..\ptune2_simple\Ptune2_direct.h" />
+    <ClInclude Include="..\..\ptune2_simple\src\SH7305_CPG_BSC.h" />
+    <ClInclude Include="..\..\snd\snd.h" />
     <ClInclude Include="..\..\zx7\zx7.h" />
     <ClInclude Include="..\fxcg\app.h" />
     <ClInclude Include="..\fxcg\display.h" />
@@ -41,7 +47,7 @@
     <ProjectGuid>{CDCB62B5-A258-4B9A-AC63-732B0C7B4574}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>winsim</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WindowsSim|Win32'" Label="Configuration">
@@ -70,7 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;TARGET_WINSIM=1;DEBUG=1</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\zx7;$(ProjectDir)\..\..\calctype;$(ProjectDir)\..\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\zx7;$(ProjectDir)\..\..\calctype;$(ProjectDir)\..\..\ptune2_simple;$(ProjectDir)\..\..\snd;$(ProjectDir)\..\</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <SupportJustMyCode>false</SupportJustMyCode>
       <ExceptionHandling>false</ExceptionHandling>
