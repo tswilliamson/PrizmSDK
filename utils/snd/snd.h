@@ -33,7 +33,7 @@
 // initializes the platform sound system. Returns false on error
 bool sndInit();
 
-// platform update from emulator for sound system, called 8 times per frame (should be enough!)
+// platform update from emulator for sound system, please call approx 400 times per second (or use condSoundUpdate() below quite a bit)
 void sndUpdate();
 
 // cleans up the platform sound system, called when emulation ends
@@ -46,9 +46,12 @@ void sndVolumeDown();
 // called from the platform sound system to fill a 1/64 second buffer (range 0-15750) based on current sound values
 void sndFrame(int* buffer, int length);
 
+// must be defined by using project to tell sound system if sound is enabled, e.g. emulator.settings.sound in Prizoop
+extern bool bSoundEnabled;
+
 #if TARGET_PRIZM
 extern unsigned int lastSoundCounter;
-#define condSoundUpdate() if (emulator.settings.sound && lastSoundCounter > REG_TMU_TCNT_1) sndUpdate()
+#define condSoundUpdate() if (bSoundEnabled && lastSoundCounter > REG_TMU_TCNT_1) sndUpdate()
 #else
-#define condSoundUpdate() if (emulator.settings.sound) sndUpdate()
+#define condSoundUpdate() if (bSoundEnabled) sndUpdate()
 #endif
