@@ -140,7 +140,7 @@ inline const int ApplyDrop(const int val) {
 }
 
 void computeBTCTable() {
-	const int volDivisor = 1 << sndSettings[0];
+	const int volDivisor = sndSettings[1];
 	const int baseRise = 6400;
 	const int baseDrop = ApplyDrop(baseRise);
 	minVoltage = min(baseDrop * 8 / volDivisor, 4096);
@@ -149,6 +149,7 @@ void computeBTCTable() {
 	for (int targetVoltage = 8; targetVoltage < 32768 + 8; targetVoltage += 16) {
 		for (int rollingBitState = 0; rollingBitState < 2; rollingBitState++) {
 			unsigned bitState = rollingBitState;
+			int consecutiveBits = 2;
 			int voltage = 16384;
 			unsigned word = 0;
 
@@ -164,13 +165,20 @@ void computeBTCTable() {
 						bit0Voltage = voltage - ApplyLatency(baseDrop) / volDivisor;
 						break;
 				}
+
+				bool bForceBit1 = sndSettings[4] == 1 && consecutiveBits >= 4 && bitState == 0;
+				bool bForceBit0 = sndSettings[4] == 1 && consecutiveBits >= 4 && bitState == 1;
 						
-				if (abs(bit0Voltage - targetVoltage) > abs(bit1Voltage - targetVoltage)) {
+				if ((abs(bit0Voltage - targetVoltage) > abs(bit1Voltage - targetVoltage) || bForceBit1) && !bForceBit0) {
 					// bit1 is closer
 					word |= (1 << b);
+					if (bitState == 1) consecutiveBits++;
+					else consecutiveBits = 1;
 					bitState = 1;
 					voltage = bit1Voltage;
 				} else {
+					if (bitState == 0) consecutiveBits++;
+					else consecutiveBits = 1;
 					bitState = 0;
 					voltage = bit0Voltage;
 				}
@@ -262,7 +270,7 @@ void sndUpdate() {
 					sampleNum = 0;
 				}
 				int lastSample = curSample;
-				const int sampleScale = sndSettings[1];
+				const int sampleScale = 6;
 				int baseVoltage = 8192 - sampleScale * 512;
 				curSample = curSoundBuffer[sampleNum] * sampleScale / 16 + baseVoltage;
 				sampleNum++;
@@ -321,10 +329,10 @@ void sndCleanup() {
 }
 
 const int perVolumeSettings[4][5] = {
-	{ 2,6,15,4,2 },
-	{ 3,4,14,4,2 },
-	{ 4,3,14,8,2 },
-	{ 5,6,12,33,1 },
+	{ 2,12,15,4,2 },
+	{ 3,16,14,4,2 },
+	{ 4,24,14,8,2 },
+	{ 5,32,12,33,1 },
 };
 
 void updateSettings() {
