@@ -110,11 +110,11 @@ static int curSoundBuffer[BUFF_SIZE];
 static int sampleNum = 0;
 
 static int sndSettings[5] = {
-	3,			// volDivisor (2-5)
-	4,			// sampleScale (out of 16)
-	14,			// latency (out of 16)
+	1,			// vol #
+	12,			// amplitude divisor
+	15,			// latency (out of 16)
 	4,			// voltageDrop (out of 64)
-	2,			// blendMode (out of 4)
+	1,			// blendMode (out of 4)
 };
 
 int minVoltage = 0;
@@ -149,8 +149,8 @@ void computeBTCTable() {
 	for (int targetVoltage = 8; targetVoltage < 32768 + 8; targetVoltage += 16) {
 		for (int rollingBitState = 0; rollingBitState < 2; rollingBitState++) {
 			unsigned bitState = rollingBitState;
-			int consecutiveBits = 2;
 			int voltage = 16384;
+			int lastVoltage = 16384;
 			unsigned word = 0;
 
 			for (int b = 0; b < 8; b++) {
@@ -165,23 +165,20 @@ void computeBTCTable() {
 						bit0Voltage = voltage - ApplyLatency(baseDrop) / volDivisor;
 						break;
 				}
-
-				bool bForceBit1 = sndSettings[4] == 1 && consecutiveBits >= 4 && bitState == 0;
-				bool bForceBit0 = sndSettings[4] == 1 && consecutiveBits >= 4 && bitState == 1;
 						
-				if ((abs(bit0Voltage - targetVoltage) > abs(bit1Voltage - targetVoltage) || bForceBit1) && !bForceBit0) {
+				if (abs(bit0Voltage - targetVoltage) > abs(bit1Voltage - targetVoltage)) {
 					// bit1 is closer
 					word |= (1 << b);
-					if (bitState == 1) consecutiveBits++;
-					else consecutiveBits = 1;
 					bitState = 1;
 					voltage = bit1Voltage;
 				} else {
-					if (bitState == 0) consecutiveBits++;
-					else consecutiveBits = 1;
 					bitState = 0;
 					voltage = bit0Voltage;
 				}
+
+				// apply lowpass filter
+				voltage = (voltage * 4 + lastVoltage) / 5;
+				lastVoltage = voltage;
 			}
 
 			int entry = (targetVoltage / 16) * 2 + rollingBitState;
@@ -328,15 +325,16 @@ void sndCleanup() {
 	}
 }
 
-const int perVolumeSettings[4][5] = {
-	{ 2,12,15,4,2 },
-	{ 3,16,14,4,2 },
-	{ 4,24,14,8,2 },
-	{ 5,32,12,33,1 },
+const int perVolumeSettings[5][5] = {
+	{ 0,6, 15,4,1 },
+	{ 1,12,15,4,1 },
+	{ 2,18,15,4,1 },
+	{ 3,24,15,4,1 },
+	{ 4,32,15,4,1 },
 };
 
 void updateSettings() {
-	const int* settings = perVolumeSettings[sndSettings[0] - 2];
+	const int* settings = perVolumeSettings[sndSettings[0]];
 	for (int i = 0; i < numSoundSettings; i++) {
 		sndSettings[i] = settings[i];
 	}
@@ -345,7 +343,7 @@ void updateSettings() {
 }
 
 void sndVolumeUp() {
-	if (sndSettings[0] < 5) {
+	if (sndSettings[0] < 4) {
 		sndSettings[0]++;
 
 		updateSettings();
@@ -354,7 +352,7 @@ void sndVolumeUp() {
 
 
 void sndVolumeDown() {
-	if (sndSettings[0] > 2) {
+	if (sndSettings[0] > 0) {
 		sndSettings[0]--;
 
 		updateSettings();
