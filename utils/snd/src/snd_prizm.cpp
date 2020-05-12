@@ -304,10 +304,24 @@ void sndUpdate() {
 				}
 
 				static unsigned char bits = 0;
-				bits = LookupBTC(curVoltage, target1, bits);
+				static unsigned char bits2 = 0;
+				static int numZero = 0;
+				bits = LookupBTC(curVoltage, target1, bits2);
 				writeBuffer[iter] = bits;
-				bits = LookupBTC(curVoltage, target2, bits);
-				writeBuffer[iter + 1] = bits;
+
+				bits2 = LookupBTC(curVoltage, target2, bits);
+				if (bits == 0 && bits2 == 0) numZero++;
+				else numZero = 0;
+
+				// need a voltage 'come down' on zero bits to avoid pop:
+				const unsigned char bitDownTable[12] = {
+					0, 64, 64, 0, 64, 0, 64, 0, 0, 0, 64, 0
+				};
+				if (numZero < 24) {
+					bits2 |= bitDownTable[numZero / 2];
+				}
+
+				writeBuffer[iter + 1] = bits2;
 			}
 
 			Serial_Write(writeBuffer, toAdd);
