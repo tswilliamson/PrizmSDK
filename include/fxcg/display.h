@@ -356,11 +356,11 @@ void VRAM_XORSprite(const color_t* data, int x, int y, int width, int height);
 #define COLOR_YELLOWGREEN (color_t)0x9E66
 
 // TW : So far this appears to be the most reliable way to determine model
-enum DeviceType {
+typedef enum {
 	DT_CG20,			// or CG10
 	DT_CG50,
 	DT_Winsim
-};
+} DeviceType;
 
 inline DeviceType getDeviceType() {
 #if TARGET_PRIZM

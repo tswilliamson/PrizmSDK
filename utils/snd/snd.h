@@ -23,12 +23,8 @@
 
 #include "fxcg/tmu.h"
 
-// sound baud rate
-#if TARGET_PRIZM
-#define SOUND_RATE 14400
-#else
-#define SOUND_RATE 32000
-#endif
+// sound baud rate, based on Prizm modem speed
+#define SOUND_RATE 28800
 
 // initializes the platform sound system. Returns false on error
 bool sndInit();

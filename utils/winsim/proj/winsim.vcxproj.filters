@@ -66,6 +66,9 @@
     <ClCompile Include="..\..\snd\src\snd_prizm.cpp">
       <Filter>snd</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\snd\src\snd_main.cpp">
+      <Filter>snd</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\prizmsim.h">
@@ -117,6 +120,9 @@
       <Filter>ptune2_simple</Filter>
     </ClInclude>
     <ClInclude Include="..\..\snd\snd.h">
+      <Filter>snd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\snd\src\snd_private.h">
       <Filter>snd</Filter>
     </ClInclude>
   </ItemGroup>
