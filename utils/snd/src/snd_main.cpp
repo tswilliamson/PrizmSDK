@@ -5,199 +5,86 @@
 
 #include "snd.h"
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
-#ifndef max
-#define max(a,b)            (((a) > (b)) ? (a) : (b))
-#endif
-
-#ifndef min
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
-#endif
-
-static int sndSettings[5] = {
-	1,			// vol #
-	12,			// amplitude divisor
-	15,			// latency (out of 16)
-	4,			// voltageDrop (out of 64)
-	1,			// blendMode (out of 4)
+// volume has to be modulated in a number of ways do to reality of 1-bit audio:
+const int numSoundSettings = 4;
+const int perVolumeSettings[5][numSoundSettings] = {
+	{ 0,9, 3,0xCC },
+	{ 1,9, 2,0xCC },
+	{ 2,9, 2,0xFF },
+	{ 3,9, 1,0xFF },
+	{ 4,10,1,0xFF },
 };
 
-int minVoltage = 0;
-int maxVoltage = 0;
-
-const int numSoundSettings = 5;
-
-unsigned int lastSoundCounter;
-
-struct BTCEntry {
-	unsigned char bits;
-	short voltageOffset;
+static int sndSettings[numSoundSettings] = {
+	perVolumeSettings[2][0],	// vol #
+	perVolumeSettings[2][1],	// bit shift used to determine step size of voltage. Smaller = more volts, higher = less accuracy
+	perVolumeSettings[2][2],	// bit shift used directly on sample data, which pushes the overall voltage lower
+	perVolumeSettings[2][3],	// final additional masking done to output bits. Can be used to force down bits while maintaining voltage simulation
 };
 
-static BTCEntry* btcTable = NULL;
+static int curVoltage = 8192;
 
-inline const int ApplyLatency(const int val) {
-	return val * sndSettings[2] / 16;
-}
+inline unsigned char BTC(int target) {
+	unsigned char btc = 0;
+	const int shift = sndSettings[1];
 
-inline const int ApplyDrop(const int val) {
-	return val * sndSettings[3] / 64;
-}
+	for (int bit = 0; bit < 8; bit++) {
+		btc <<= 1;
 
-void ComputeBTCTable() {
-	if (btcTable == 0) {
-		btcTable = (BTCEntry*)malloc(sizeof(BTCEntry) * 4096);
-	}
+		int dist = (32768 - curVoltage) >> shift;
+		int upVoltage = curVoltage + dist;
 
-	const int volDivisor = sndSettings[1];
-	const int baseRise = 6400;
-	const int baseDrop = ApplyDrop(baseRise);
-	minVoltage = min(baseDrop * 8 / volDivisor, 4096);
-	maxVoltage = max(16384 - baseRise * 8 / volDivisor, 12288);
+		dist = curVoltage >> shift;
+		int downVoltage = curVoltage - dist;
 
-	for (int targetVoltage = 8; targetVoltage < 32768 + 8; targetVoltage += 16) {
-		for (int rollingBitState = 0; rollingBitState < 2; rollingBitState++) {
-			unsigned bitState = rollingBitState;
-			int voltage = 16384;
-			int lastVoltage = 16384;
-			unsigned word = 0;
-
-			for (int b = 0; b < 8; b++) {
-				int bit1Voltage, bit0Voltage;
-				switch (bitState) {
-					case 0:
-						bit1Voltage = voltage + ApplyLatency(baseRise) / volDivisor;
-						bit0Voltage = voltage - baseDrop / volDivisor;
-						break;
-					case 1:
-						bit1Voltage = voltage + baseRise / volDivisor;
-						bit0Voltage = voltage - ApplyLatency(baseDrop) / volDivisor;
-						break;
-				}
-						
-				if (abs(bit0Voltage - targetVoltage) > abs(bit1Voltage - targetVoltage)) {
-					// bit1 is closer
-					word |= (1 << b);
-					bitState = 1;
-					voltage = bit1Voltage;
-				} else {
-					bitState = 0;
-					voltage = bit0Voltage;
-				}
-
-				// apply lowpass filter
-				voltage = (voltage * 4 + lastVoltage) / 5;
-				lastVoltage = voltage;
+		// an early out when voltage is reached that reduces distortion:
+		if ((bit & 1) == 0 && upVoltage > target && downVoltage < target) {
+			// just maintain position with 1/0 flipping
+			int useBit = (upVoltage - target < target - downVoltage) ? 1 : 0;
+			btc |= useBit;
+			bit++;
+			while (bit < 8) {
+				btc <<= 1;
+				useBit = useBit ^ 1;
+				btc |= useBit;
+				bit++;
 			}
-
-			int entry = (targetVoltage / 16) * 2 + rollingBitState;
-			btcTable[entry].bits = word;
-			btcTable[entry].voltageOffset = voltage - 16384;
+			break;
 		}
 
-	}
-}
+		int disthigh = upVoltage - target;
+		if (disthigh < 0) disthigh = -disthigh;
+		int distlow = downVoltage - target;
+		if (distlow < 0) distlow = -distlow;
 
-inline unsigned char LookupBTC(int& curVoltage, int destVoltage, unsigned short lastBits) {
-	int voltageOffset = (destVoltage + 16384 - curVoltage);
-	const BTCEntry& entry = btcTable[(voltageOffset / 16) * 2 + (lastBits & 1)];
-	curVoltage += entry.voltageOffset;
-	if (curVoltage < minVoltage) curVoltage = minVoltage;
-	else if (curVoltage > maxVoltage) curVoltage = maxVoltage;
-	return entry.bits;
+		if (disthigh < distlow) {
+			btc |= 1;
+			curVoltage = upVoltage;
+		} else {
+			curVoltage = downVoltage;
+		}
+	}
+
+	return btc & sndSettings[3];
 }
 
 // Convert samples into 16-bit chunks of 1-bit BTC audio
 void ConvertSamples(int* samples, unsigned char* convertedBuffer, int numSamples) {
-	static int curVoltage = 0;
-	static int curSample = 0;
+	const int bitShift = sndSettings[2];
+	const int voltageOffset = 8192; //  16384 - (8192 >> bitShift);
+	for (int i = 0; i < numSamples; i++) {
+		int sampleTarget = (*(samples++) >> bitShift) + voltageOffset;
 
-	int target1 = 0, target2 = 0;
-	for (int iter = 0; iter < numSamples; iter++) {
-		int lastSample = curSample;
-		const int sampleScale = 6;
-		int baseVoltage = 8192 - sampleScale * 512;
-		curSample = samples[iter] * sampleScale / 16 + baseVoltage;
-				
-		switch (sndSettings[4]) {
-			case 0:
-			{
-				// no blending
-				target1 = curSample;
-				target2 = curSample;
-				break;
-			}
-			case 1:
-			{
-				// single average
-				target1 = (curSample + lastSample) >> 1;
-				target2 = curSample;
-				break;
-			}
-			case 2:
-			{
-				// walking average
-				target1 = (curSample + lastSample * 3) >> 2;
-				target2 = (curSample * 3 + lastSample) >> 2;
-				break;
-			}
-			case 3:
-			{
-				// embedded average
-				target1 = (curSample + lastSample * 2 + curVoltage) >> 2;
-				target2 = (curSample * 2 + lastSample + curVoltage) >> 2;
-				break;
-			}
-		}
-
-		static unsigned char bits = 0;
-		static unsigned char bits2 = 0;
-		static int numZero = 0;
-		bits = LookupBTC(curVoltage, target1, bits2);
-		*(convertedBuffer++) = bits;
-
-		bits2 = LookupBTC(curVoltage, target2, bits);
-		if (bits == 0 && bits2 == 0) numZero++;
-		else numZero = 0;
-
-		// need a voltage 'come down' on zero bits to avoid pop:
-		const unsigned char bitDownTable[12] = {
-			0, 64, 64, 0, 64, 0, 64, 0, 0, 0, 64, 0
-		};
-		if (numZero < 24) {
-			bits2 |= bitDownTable[numZero / 2];
-		}
-
-		*(convertedBuffer++) = bits2;
+		*(convertedBuffer++) = BTC((curVoltage + sampleTarget) / 2);
+		*(convertedBuffer++) = BTC(sampleTarget);
 	}
 }
-
-// cleans up the platform sound system, called when emulation ends
-void FreeBTCTable() {
-	if (btcTable) {
-		free((void*)btcTable);
-		btcTable = NULL;
-	}
-}
-
-const int perVolumeSettings[5][5] = {
-	{ 0,6, 15,4,1 },
-	{ 1,12,15,4,1 },
-	{ 2,18,15,4,1 },
-	{ 3,24,15,4,1 },
-	{ 4,32,15,4,1 },
-};
 
 void updateSettings() {
 	const int* settings = perVolumeSettings[sndSettings[0]];
 	for (int i = 0; i < numSoundSettings; i++) {
 		sndSettings[i] = settings[i];
 	}
-
-	ComputeBTCTable();
 }
 
 void sndVolumeUp() {
@@ -207,7 +94,6 @@ void sndVolumeUp() {
 		updateSettings();
 	}
 }
-
 
 void sndVolumeDown() {
 	if (sndSettings[0] > 0) {

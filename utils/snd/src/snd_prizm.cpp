@@ -107,6 +107,8 @@ struct st_scif0 {                                      /* struct SCIF0 */
 
 #define BUFF_SIZE (SOUND_RATE / 64)
 
+unsigned int lastSoundCounter;
+
 static int curSoundBuffer[BUFF_SIZE];
 static int sampleNum = 0;
 
@@ -141,8 +143,6 @@ bool sndInit() {
 				break;
 		}
 	}
-
-	ComputeBTCTable();
 
 	return true;
 }
@@ -190,8 +190,6 @@ void sndUpdate() {
 // cleans up the platform sound system, called when emulation ends
 void sndCleanup() {
 	Serial_Close(1);
-
-	FreeBTCTable();
 }
 
 #endif

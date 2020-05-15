@@ -94,8 +94,6 @@ static void CALLBACK sndProc(
 
 // initializes the platform sound system, called when emulation begins
 bool sndInit() {
-	ComputeBTCTable();
-
 	sndShutdown = false;
 	WAVEFORMATEX format;
 	format.wFormatTag = WAVE_FORMAT_PCM;
@@ -154,8 +152,6 @@ void sndCleanup() {
 	}
 
 	waveOutClose(device);
-
-	FreeBTCTable();
 }
 
 #endif
