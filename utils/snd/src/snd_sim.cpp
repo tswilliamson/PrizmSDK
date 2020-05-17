@@ -6,10 +6,11 @@
 #include <Windows.h>
 #include <assert.h>
 
-bool bSimulate1Bit = true;
+bool bSimulate1Bit = false;
 
 HWAVEOUT device;
 
+#define USE_VOLTAGE_POTENTIAL 1
 #define SUPER_SAMPLE 8
 #define PLAYBACK_RATE SOUND_RATE * SUPER_SAMPLE
 
@@ -28,8 +29,6 @@ static void prepareBuffer(HWAVEOUT hwo, int bufferNum) {
 	static int renderBuffer[RENDER_BUFFER_SIZE];
 	headers[bufferNum].dwFlags &= ~WHDR_DONE;
 
-	int last = renderBuffer[RENDER_BUFFER_SIZE -1];
-
 	// buffer is 4 frames
 	sndFrame(&renderBuffer[0], RENDER_BUFFER_SIZE);
 
@@ -41,10 +40,10 @@ static void prepareBuffer(HWAVEOUT hwo, int bufferNum) {
 		unsigned char* btc = btcBuffer;
 		short* target = buffer[bufferNum];
 
-#if defined(USE_VOLTAGE_POTENTIAL) || true
-		static float curVoltage = 0;
-		static float stepSizeUp = 0.025f;
-		static float stepSizeDown = -0.025f;
+#if defined(USE_VOLTAGE_POTENTIAL)
+		static float curVoltage = 16384;
+		static float stepSizeUp = 0.002f;
+		static float stepSizeDown = -0.002f;
 		static float minStep = 0.25f;
 		for (int i = 0; i < RENDER_BUFFER_SIZE * 2; i++) {
 			// each 16-bit sample gets rendered into 8 playback samples, so 8 -> 4
@@ -76,10 +75,13 @@ static void prepareBuffer(HWAVEOUT hwo, int bufferNum) {
 		}
 #endif
 	} else {
-		for (int i = PLAY_BUFFER_SIZE - 1; i > SUPER_SAMPLE; i--) {
-			buffer[bufferNum][i] = (renderBuffer[i / SUPER_SAMPLE] + renderBuffer[i / SUPER_SAMPLE - 1]);
+		int last = buffer[bufferNum][PLAY_BUFFER_SIZE - 1];
+
+		for (int i = 0 ; i < PLAY_BUFFER_SIZE; i++) {
+			int newSample = renderBuffer[i / SUPER_SAMPLE];
+			buffer[bufferNum][i] = (newSample + last) / 2;
+			last = newSample;
 		}
-		buffer[bufferNum][0] = (renderBuffer[0] + last);
 	}
 }
 

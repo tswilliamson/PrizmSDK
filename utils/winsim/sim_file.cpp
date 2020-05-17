@@ -19,15 +19,23 @@ static void ResolvePaths() {
 	if (romPath[0] == 0) {
 		PWSTR path;
 		if (SHGetKnownFolderPath(FOLDERID_Documents, 0, NULL, &path) == S_OK) {
-			WideCharToMultiByte(CP_ACP, 0, (LPWSTR)path, -1, (LPSTR)romPath, 256, NULL, NULL);
+			static char prizmPath[256] = { 0 };
+			WideCharToMultiByte(CP_ACP, 0, (LPWSTR)path, -1, (LPSTR)prizmPath, 256, NULL, NULL);
+			strcat(prizmPath, "\\Prizm");
+			CreateDirectory(prizmPath, NULL);
 
-			strcpy(ramPath, romPath);
+			strcpy(romPath, prizmPath);
+			strcpy(ramPath, prizmPath);
 
 			// prizm rom files go in My Documents / Prizm / ROM
-			strcat(romPath, "\\Prizm\\ROM\\");
+			strcat(romPath, "\\ROM");
+			CreateDirectory(romPath, NULL);
+			strcat(romPath, "\\");
 
 			// prizm ram files go in My Documents / Prizm / RAM
-			strcat(ramPath, "\\Prizm\\RAM\\");
+			strcat(ramPath, "\\RAM");
+			CreateDirectory(ramPath, NULL);
+			strcat(ramPath, "\\");
 
 			// should point to main project directory for most projects (working dir in VS debug set to .vcxproj directory)
 			strcpy(devPath, "..\\");
