@@ -6,21 +6,23 @@
 #include "snd.h"
 
 // volume has to be modulated in a number of ways do to reality of 1-bit audio:
+const int numVolumes = 7;
 const int numSoundSettings = 4;
-const int perVolumeSettings[5][numSoundSettings] = {
-	{ 0,9, 3,0xCC },
-	{ 1,9, 2,0xCC },
-	{ 2,9, 2,0xFF },
-	{ 3,9, 1,0xFF },
-	{ 4,10,1,0xFF },
-};
 
-static int sndSettings[numSoundSettings] = {
-	perVolumeSettings[2][0],	// vol #
-	perVolumeSettings[2][1],	// bit shift used to determine step size of voltage. Smaller = more volts, higher = less accuracy
-	perVolumeSettings[2][2],	// bit shift used directly on sample data, which pushes the overall voltage lower
-	perVolumeSettings[2][3],	// final additional masking done to output bits. Can be used to force down bits while maintaining voltage simulation
+// vol #
+// bit shift used to determine step size of voltage. Smaller = more volts, higher = less accuracy
+// bit shift used directly on sample data, which pushes the overall voltage lower
+// final additional masking done to output bits. Can be used to force down bits while maintaining voltage simulation
+const int perVolumeSettings[numVolumes][numSoundSettings] = {
+	{ 0,8, 4,0xCC },
+	{ 1,9, 4,0xCC },
+	{ 2,9, 3,0xCC },
+	{ 3,9, 3,0xFF },
+	{ 4,9, 2,0xFF },
+	{ 5,9, 1,0xFF },
+	{ 6,10,1,0xFF },
 };
+static int sndSettings[numSoundSettings] = { 3, 9, 3, 0xFF };
 
 static int curVoltage = 8192;
 
@@ -40,13 +42,13 @@ inline unsigned char BTC(int target) {
 		// an early out when voltage is reached that reduces distortion:
 		if ((bit & 1) == 0 && upVoltage > target && downVoltage < target) {
 			// just maintain position with 1/0 flipping
-			int useBit = (upVoltage - target < target - downVoltage) ? 1 : 0;
-			btc |= useBit;
+			unsigned int useBit = (upVoltage - target < target - downVoltage) ? 0x55 : 0xAA;
+			btc |= (useBit & 1);
 			bit++;
 			while (bit < 8) {
+				useBit >>= 1;
 				btc <<= 1;
-				useBit = useBit ^ 1;
-				btc |= useBit;
+				btc |= (useBit & 1);
 				bit++;
 			}
 			break;
@@ -88,7 +90,7 @@ void updateSettings() {
 }
 
 void sndVolumeUp() {
-	if (sndSettings[0] < 4) {
+	if (sndSettings[0] < numVolumes - 1) {
 		sndSettings[0]++;
 
 		updateSettings();
