@@ -33,6 +33,26 @@ int RTC_GetTicks() {
 	return (int)(GetTickCount64() * 16 / 125);
 }
 
+unsigned int ToBCD(unsigned int value) {
+	unsigned int ret = 0;
+	int curDigit = 1;
+	while (value) {
+		ret += curDigit * (value % 10);
+		value /= 10;
+		curDigit *= 16;
+	}
+	return ret;
+}
+
+void RTC_GetTime(unsigned int* hours, unsigned int* minutes, unsigned int* seconds, unsigned int* ms) {
+	SYSTEMTIME curTime;
+	GetLocalTime(&curTime);
+	*hours = ToBCD(curTime.wHour);
+	*minutes = ToBCD(curTime.wMinute);
+	*seconds = ToBCD(curTime.wSecond);
+	*ms = ToBCD(curTime.wMilliseconds);
+}
+
 void OS_InnerWait_ms(int ms) {
 	Sleep(ms);
 }
