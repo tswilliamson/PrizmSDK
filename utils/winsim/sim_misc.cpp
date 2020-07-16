@@ -421,7 +421,7 @@ struct VKeyMapping {
 };
 
 // Mapped virtual keys:
-#define NUM_KEY_MAPS 50
+#define NUM_KEY_MAPS 60
 static VKeyMapping keys[NUM_KEY_MAPS] = {
 //  F1-F6 - F1-F6
 	{ VK_F1,			KEY_CTRL_F1, 79 },
@@ -485,6 +485,17 @@ static VKeyMapping keys[NUM_KEY_MAPS] = {
 	{ VK_RETURN,		KEY_CTRL_EXE, 31 },
 //  AC/On - Escape (though this will exit the program on simulator anyway)
 	{ VK_ESCAPE,		KEY_CTRL_AC, 10 },
+	// number row
+	{ '0',		KEY_CHAR_0, 71 },
+	{ '1',		KEY_CHAR_1, 72 },
+	{ '2',		KEY_CHAR_2, 62 },
+	{ '3',		KEY_CHAR_3, 52 },
+	{ '4',		KEY_CHAR_4, 73 },
+	{ '5',		KEY_CHAR_5, 63 },
+	{ '6',		KEY_CHAR_6, 53 },
+	{ '7',		KEY_CHAR_7, 74 },
+	{ '8',		KEY_CHAR_8, 64 },
+	{ '9',		KEY_CHAR_9, 54 },
 };
 
 int GetKey(int* key) {
