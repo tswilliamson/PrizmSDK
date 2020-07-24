@@ -142,8 +142,6 @@ void PrintMini( int *x, int *y, const char *MB_string, int mode_flags, unsigned 
 void PrintMiniMini( int *x, int *y, const char *MB_string, int mode1, char color, int mode2 );
 void Print_OS( const char*msg, int mode, int zero2 );
 void Bdisp_WriteSystemMessage( int x, int y, int msgno, int mode, char color3 );
-void Bdisp_MMPrintRef(int *x, int *y, const char *string, int mode_flags, int xlimit, int P6, int P7, int color, int back_color, int writeflag, int P11);
-void Bdisp_MMPrint(int x, int y, const char *string, int mode_flags, int xlimit, int P6, int P7, int color, int back_color, int writeflag, int P11);
 
 //Progressbars and scrollbars:
 struct scrollbar

@@ -7,7 +7,7 @@ ifeq ($(strip $(FXCGSDK)),)
 export FXCGSDK := $(realpath ../../)
 endif
 
-include $(FXCGSDK)/common/util_rules
+include $(FXCGSDK)/toolchain/util_rules
 
 
 #---------------------------------------------------------------------------------
@@ -21,9 +21,12 @@ BUILD		:=	$(CONFIG)
 SOURCES		:=	src
 INCLUDES	:=
 
+
 #---------------------------------------------------------------------------------
 # options for code and library generation
 #---------------------------------------------------------------------------------
+
+
 
 CFLAGS	= -Os \
 		  -Wall \
@@ -43,7 +46,7 @@ CXXFLAGS =	$(CFLAGS) \
 
 ASFLAGS	=	$(CFLAGS) 
 
-LDFLAGS	= $(MACHDEP) -O2 -T$(FXCGSDK)/common/prizm.ld -Wl,-static -Wl,-gc-sections
+LDFLAGS	= $(MACHDEP) -O2 -T$(FXCGSDK)/toolchain/prizm.x -Wl,-static -Wl,-gc-sections
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
@@ -94,7 +97,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 export CYGWIN := nodosfilewarning
 clean:
-	$(RM) -fr $(BUILD) $(OUTPUT).a $(OFILES)
+	$(call rm) -fr $(BUILD) $(OUTPUT).a $(OFILES)
 
 #---------------------------------------------------------------------------------
 else

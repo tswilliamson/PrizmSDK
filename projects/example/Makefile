@@ -2,12 +2,15 @@
 # Clear the implicit built in rules
 #---------------------------------------------------------------------------------
 .SUFFIXES:
-
+#---------------------------------------------------------------------------------
+# Set toolchain location in an environment var for future use, this will change
+# to use a system environment var in the future.
+#---------------------------------------------------------------------------------
 ifeq ($(strip $(FXCGSDK)),)
-export FXCGSDK := $(realpath ../../)
+export FXCGSDK := $(abspath ../../)
 endif
 
-include $(FXCGSDK)/common/prizm_rules
+include $(FXCGSDK)/toolchain/prizm_rules
 
 
 #---------------------------------------------------------------------------------
@@ -17,7 +20,7 @@ include $(FXCGSDK)/common/prizm_rules
 # INCLUDES is a list of directories containing extra header files
 #---------------------------------------------------------------------------------
 TARGET		:=	$(notdir $(CURDIR))
-BUILD		:=	$(CONFIG)
+BUILD		:=	build
 SOURCES		:=	src
 DATA		:=	data  
 INCLUDES	:=
@@ -28,31 +31,15 @@ INCLUDES	:=
 
 MKG3AFLAGS := -n basic:example -i uns:../unselected.bmp -i sel:../selected.bmp
 
-CFLAGS	= -O2 \
-		  -Wall \
-		  -funroll-loops \
-		  -fno-trapping-math \
-		  -fno-trapv \
-		  -Wno-switch \
-		  $(MACHDEP) $(INCLUDE) $(DEFINES)
+CFLAGS	= -Os -Wall $(MACHDEP) $(INCLUDE) -ffunction-sections -fdata-sections 
+CXXFLAGS	=	$(CFLAGS)
 
-CXXFLAGS	=	$(CFLAGS) \
-		  -fpermissive \
-		  -fno-rtti \
-		  -fno-exceptions \
-		  -fno-threadsafe-statics \
-		  -fno-use-cxa-get-exception-ptr 
-
-ASFLAGS	=	$(CFLAGS) 
-
-# add -S -fverbose-asm for assembly output
-
-LDFLAGS	= $(MACHDEP) -O2 -T$(FXCGSDK)/common/prizm.ld -Wl,-static -Wl,-gc-sections
+LDFLAGS	= $(MACHDEP) -T$(FXCGSDK)/toolchain/prizm.x -Wl,-static -Wl,-gc-sections
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:=	-lfxcg -lgcc -lm -lc
+LIBS	:=	 -lfxcg -lc -lgcc
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
@@ -67,7 +54,7 @@ LIBDIRS	:=
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 #---------------------------------------------------------------------------------
 
-export OUTPUT		:=	$(CURDIR)/$(BUILD)/$(TARGET)
+export OUTPUT	:=	$(CURDIR)/$(TARGET)
 
 export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
 					$(foreach dir,$(DATA),$(CURDIR)/$(dir))
@@ -79,6 +66,7 @@ export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 #---------------------------------------------------------------------------------
 CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
+sFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.S)))
 BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
 
@@ -93,35 +81,37 @@ endif
 
 export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 					$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) \
-					$(SFILES:.S=.o)
+					$(sFILES:.s=.o) $(SFILES:.S=.o)
 
 #---------------------------------------------------------------------------------
 # build a list of include paths
 #---------------------------------------------------------------------------------
 export INCLUDE	:=	$(foreach dir,$(INCLUDES), -iquote $(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
-					-I$(CURDIR)/$(BUILD) -I$(LIBFXCG_INC) -I$(UTILS_INC)
+					-I$(CURDIR)/$(BUILD) -I$(LIBFXCG_INC)
 
 #---------------------------------------------------------------------------------
 # build a list of library paths
 #---------------------------------------------------------------------------------
 export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib) \
-					-L$(FXCGSDK)/utils/lib \
-					-L$(LIBFXCG_LIB) 
-					
-export OUTPUT		:=	$(CURDIR)/$(BUILD)/$(TARGET)
-export OUTPUT_FINAL		:=	$(CURDIR)/$(TARGET)
-.PHONY: $(BUILD) clean
+					-L$(LIBFXCG_LIB)
+
+export OUTPUT	:=	$(CURDIR)/$(TARGET)
+.PHONY: all clean
 
 #---------------------------------------------------------------------------------
-$(BUILD):
-	@[ -d $@ ] || mkdir $@
+all: $(BUILD)
 	@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+
+$(BUILD):
+	@mkdir $@
 
 #---------------------------------------------------------------------------------
 export CYGWIN := nodosfilewarning
 clean:
-	$(RM) -fr $(BUILD) $(OUTPUT).bin $(OUTPUT_FINAL).g3a
+	$(call rmdir,$(BUILD))
+	$(call rm,$(OUTPUT).bin)
+	$(call rm,$(OUTPUT).g3a)
 
 #---------------------------------------------------------------------------------
 else
@@ -131,10 +121,9 @@ DEPENDS	:=	$(OFILES:.o=.d)
 #---------------------------------------------------------------------------------
 # main targets
 #---------------------------------------------------------------------------------
-$(OUTPUT_FINAL).g3a: $(OUTPUT).bin
-	$(MKG3A) $(MKG3AFLAGS) $< $@
-	
-$(OUTPUT).bin: $(OFILES) 
+$(OUTPUT).g3a: $(OUTPUT).bin
+$(OUTPUT).bin: $(OFILES)
+
 
 -include $(DEPENDS)
 

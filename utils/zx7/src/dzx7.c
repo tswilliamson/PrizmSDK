@@ -29,19 +29,19 @@
 extern "C" {
 #endif
 
-static const unsigned char *d_input_data;
-static unsigned char *d_output_data;
-static unsigned int d_input_index;
-static unsigned int d_output_index;
-static unsigned int d_input_size;
-static int bit_mask;
-static int bit_value;
+const unsigned char *d_input_data;
+unsigned char *d_output_data;
+unsigned int d_input_index;
+unsigned int d_output_index;
+unsigned int d_input_size;
+int bit_mask;
+int bit_value;
 
-inline int d_read_byte() {
+static inline int d_read_byte() {
     return d_input_data[d_input_index++];
 }
 
-inline int d_read_bit() {
+static inline int d_read_bit() {
     bit_mask >>= 1;
     if (bit_mask == 0) {
         bit_mask = 128;
@@ -50,7 +50,7 @@ inline int d_read_bit() {
     return bit_value & bit_mask ? 1 : 0;
 }
 
-inline int read_elias_gamma() {
+static inline int read_elias_gamma() {
     int i;
     int value;
 
@@ -68,7 +68,7 @@ inline int read_elias_gamma() {
     return value;
 }
 
-int read_offset() {
+static int read_offset() {
     int value;
     int i;
 
@@ -84,7 +84,7 @@ int read_offset() {
     }
 }
 
-inline void d_write_byte(int value) {
+static inline void d_write_byte(int value) {
     d_output_data[d_output_index++] = value;
 }
 

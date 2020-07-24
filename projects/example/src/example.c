@@ -2,16 +2,18 @@
 #include <fxcg/keyboard.h>
  
 void main(void) {
-	int key;
-    char blah[10];
-    blah[1]='k';
+    int key;
      
-	while (1) {
-        Bdisp_AllClr_VRAM();
+    Bdisp_AllClr_VRAM();
+    Print_OS("Press EXE to exit", 0, 0);
+
+    while (1) {
         GetKey(&key);
-		switch (key) {
-		}
-	}
+
+        if (key == KEY_CTRL_EXE) {
+            break;
+        }
+    }
  
-	return;
+    return;
 }

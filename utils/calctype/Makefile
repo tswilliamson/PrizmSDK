@@ -7,7 +7,7 @@ ifeq ($(strip $(FXCGSDK)),)
 export FXCGSDK := $(realpath ../../)
 endif
 
-include $(FXCGSDK)/common/util_rules
+include $(FXCGSDK)/toolchain/util_rules
 
 
 #---------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ CXXFLAGS =	$(CFLAGS) \
 
 ASFLAGS	=	$(CFLAGS) 
 
-LDFLAGS	= $(MACHDEP) -O2 -T$(FXCGSDK)/common/prizm.ld -Wl,-static -Wl,-gc-sections
+LDFLAGS	= $(MACHDEP) -O2 -T$(FXCGSDK)/toolchain/prizm.x -Wl,-static -Wl,-gc-sections
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
