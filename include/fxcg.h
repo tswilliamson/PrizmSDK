@@ -37,7 +37,7 @@ char *sys_strcpy(char *dest, const char *src);
 char *sys_strncpy(char *dest, const char *src, size_t n);
 
 
-#ifdef USE_FXCG_STDLIB 
+#ifdef USE_FXCG_STDLIB
 
 #define atoi sys_atoi
 #define rand sys_rand

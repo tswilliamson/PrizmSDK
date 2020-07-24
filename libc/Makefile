@@ -7,16 +7,12 @@ CFLAGS=-c -ffunction-sections -fdata-sections -Os \
 LDFLAGS=-Wl,-static -lfxcg
 ARFLAGS=rsv
 OBJECTS=printf.o setjmp.o stdio.o stdlib.o ctype.o string.o unistd.o time.o
-LIBRARY=../lib/libc.a
+LIBRARY=libc.a
 
 all: $(LIBRARY)
 
-$(LIBRARY): $(OBJECTS) ../lib/libfxcg.a
-	copy ..\lib\libfxcg.a ..\lib\libc.a
+$(LIBRARY): $(OBJECTS)
 	$(AR) $(ARFLAGS) $@ $(OBJECTS)
 
-.S.o:
-	$(CC) $(CFLAGS)  -x assembler-with-cpp $< -o $@
-	
 clean:
 	rm -f $(OBJECTS) $(LIBRARY)
