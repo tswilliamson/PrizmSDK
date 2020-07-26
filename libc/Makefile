@@ -7,7 +7,7 @@ CFLAGS=-c -ffunction-sections -fdata-sections -Os \
 LDFLAGS=-Wl,-static -lfxcg
 ARFLAGS=rsv
 OBJECTS=printf.o setjmp.o stdio.o stdlib.o ctype.o string.o unistd.o time.o
-LIBRARY=libc.a
+LIBRARY=../lib/libc.a
 
 all: $(LIBRARY)
 

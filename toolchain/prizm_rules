@@ -27,10 +27,10 @@ export MKG3A := mkg3a
 
 ifeq ($(OS),Windows_NT)
 define rm
-  if exist "$(subst /,\,$(1))" del "$(subst /,\,$(1))"
+  -del "$(subst /,\,$(1))"
 endef
 define rmdir
-  if exist "$(subst /,\,$(1))" rmdir /S /Q "$(subst /,\,$(1))"
+  -rmdir /S /Q "$(subst /,\,$(1))"
 endef
 else
 define rm
