@@ -15,7 +15,7 @@ define rmdir
 endef
 endif
 
-MACHDEP = -mb -m4a-nofpu -mhitachi -nostdlib -fno-builtin-memcpy
+MACHDEP = -mb -m4a-nofpu -mhitachi -nostdlib
 
 #---------------------------------------------------------------------------------
 # the prefix on the compiler executables
