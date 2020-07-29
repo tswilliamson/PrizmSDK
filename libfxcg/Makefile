@@ -1,9 +1,12 @@
+
+include ../toolchain/base_rules
+
 TOOLCHAIN_PREFIX=sh3eb-elf-
 CC=$(TOOLCHAIN_PREFIX)gcc
 AS=$(TOOLCHAIN_PREFIX)as
 AR=$(TOOLCHAIN_PREFIX)ar
 CFLAGS=-c -ffunction-sections -fdata-sections -Os -Lr -I../include \
-	   -mhitachi -m4a-nofpu -flto -std=c99 -Wall -Wextra
+	   $(MACHDEP) -flto -std=c99 -Wall -Wextra
 ARFLAGS=rs
 VPATH=syscalls
 SHSOURCES=$(wildcard syscalls/*.S) $(wildcard misc/*.S)
@@ -27,5 +30,6 @@ $(LIBRARY): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm $(OBJECTS) $(LIBRARY)
+	$(call rm,$(OBJECTS))
+	$(call rm,$(LIBRARY))
 
