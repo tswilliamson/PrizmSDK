@@ -21,7 +21,7 @@ $(LIBRARY): $(OBJECTS)
 	$(AR) $(ARFLAGS) $@ $(OBJECTS) 
 
 .S.o:
-	$(CC) $(CFLAGS)  -x assembler-with-cpp $< -o $@
+	$(CC) $(CFLAGS)  -x assembler-with-cpp $(abspath $<) -o $@
 
 .c.o: 
 	$(CC) $(CFLAGS) $< -o $@

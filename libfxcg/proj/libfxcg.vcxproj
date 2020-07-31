@@ -62,6 +62,13 @@
     <ClInclude Include="..\..\include\unistd.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\libc\ctype.c" />
+    <ClCompile Include="..\..\libc\printf.c" />
+    <ClCompile Include="..\..\libc\stdio.c" />
+    <ClCompile Include="..\..\libc\stdlib.c" />
+    <ClCompile Include="..\..\libc\string.c" />
+    <ClCompile Include="..\..\libc\time.c" />
+    <ClCompile Include="..\..\libc\unistd.c" />
     <ClCompile Include="..\misc\atoi.c" />
     <ClCompile Include="..\misc\calloc.c" />
     <ClCompile Include="..\misc\callocr.c" />
@@ -73,11 +80,18 @@
     <ClCompile Include="..\misc\sprite.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\libc\clean.bat" />
+    <None Include="..\..\libc\make.bat" />
+    <None Include="..\..\libc\Makefile" />
+    <None Include="..\..\libc\setjmp.S" />
+    <None Include="..\..\toolchain\base_rules" />
     <None Include="..\clean.bat" />
     <None Include="..\make.bat" />
     <None Include="..\Makefile" />
     <None Include="..\misc\crt0.S" />
+    <None Include="..\misc\memcpy.S" />
     <None Include="..\misc\memmove.S" />
+    <None Include="..\misc\memset.S" />
     <None Include="..\misc\memsetZero.S" />
     <None Include="..\misc\strcat.S" />
     <None Include="..\misc\strchr.S" />
@@ -251,8 +265,6 @@
     <None Include="..\syscalls\MCS_WriteItem.S" />
     <None Include="..\syscalls\memcmp.S" />
     <None Include="..\syscalls\memcmp3.S" />
-    <None Include="..\syscalls\memcpy.S" />
-    <None Include="..\syscalls\memset.S" />
     <None Include="..\syscalls\MsgBoxMoveWB.S" />
     <None Include="..\syscalls\MsgBoxPop.S" />
     <None Include="..\syscalls\MsgBoxPush.S" />

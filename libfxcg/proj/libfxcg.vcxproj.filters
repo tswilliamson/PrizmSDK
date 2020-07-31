@@ -19,6 +19,9 @@
     <Filter Include="src\syscalls">
       <UniqueIdentifier>{fbbbdc2c-34ca-4674-83c6-1b108a0a424e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="libc">
+      <UniqueIdentifier>{617cb9d4-ddb3-4b46-ac7f-a75defae81dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\stddef.h">
@@ -208,6 +211,27 @@
     </ClCompile>
     <ClCompile Include="..\misc\calloc.c">
       <Filter>src\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libc\time.c">
+      <Filter>libc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libc\unistd.c">
+      <Filter>libc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libc\ctype.c">
+      <Filter>libc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libc\printf.c">
+      <Filter>libc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libc\stdio.c">
+      <Filter>libc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libc\stdlib.c">
+      <Filter>libc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libc\string.c">
+      <Filter>libc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -751,12 +775,6 @@
     <None Include="..\syscalls\memcmp3.S">
       <Filter>src\syscalls</Filter>
     </None>
-    <None Include="..\syscalls\memcpy.S">
-      <Filter>src\syscalls</Filter>
-    </None>
-    <None Include="..\syscalls\memset.S">
-      <Filter>src\syscalls</Filter>
-    </None>
     <None Include="..\syscalls\MsgBoxMoveWB.S">
       <Filter>src\syscalls</Filter>
     </None>
@@ -1003,5 +1021,24 @@
     <None Include="..\Makefile" />
     <None Include="..\clean.bat" />
     <None Include="..\make.bat" />
+    <None Include="..\..\libc\Makefile">
+      <Filter>libc</Filter>
+    </None>
+    <None Include="..\..\libc\setjmp.S">
+      <Filter>libc</Filter>
+    </None>
+    <None Include="..\..\libc\make.bat">
+      <Filter>libc</Filter>
+    </None>
+    <None Include="..\..\libc\clean.bat">
+      <Filter>libc</Filter>
+    </None>
+    <None Include="..\..\toolchain\base_rules" />
+    <None Include="..\misc\memcpy.S">
+      <Filter>src\misc</Filter>
+    </None>
+    <None Include="..\misc\memset.S">
+      <Filter>src\misc</Filter>
+    </None>
   </ItemGroup>
 </Project>
