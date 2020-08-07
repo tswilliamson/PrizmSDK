@@ -6,7 +6,9 @@
 *******************************************************************/
 
 // main function should be titled simmain for WINSIM
-int simmain(void);
+extern "C" {
+	int simmain(void);
+}
 
 extern void (*_quitHandler)();
 

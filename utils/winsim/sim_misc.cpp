@@ -57,6 +57,14 @@ void OS_InnerWait_ms(int ms) {
 	Sleep(ms);
 }
 
+void CMT_Delay_100micros(int units) {
+	Sleep(units/100);
+}
+
+void CMT_Delay_micros(int units) {
+	Sleep(units / 1000);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Display Generics
 
