@@ -12,6 +12,20 @@
  // DmaWaitNext() should be called before starting another Non-blocking DMA transfer or GetKey().
 bool dma_transfer;
 
+void PumpMessages() {
+	MSG msg;
+	for (;; ) {
+		if (!PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+			return;
+		}
+		if (msg.message == WM_QUIT) {
+			exit(0);
+			return;
+		}
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // System
@@ -54,6 +68,7 @@ void RTC_GetTime(unsigned int* hours, unsigned int* minutes, unsigned int* secon
 }
 
 void OS_InnerWait_ms(int ms) {
+	PumpMessages();
 	Sleep(ms);
 }
 
@@ -547,19 +562,26 @@ int GetKey(int* key) {
 	return result >= 30000 ? 0 : 1;
 }
 
-bool keyDown_fast(unsigned char keycode) {
-	for (int i = 0; i < NUM_KEY_MAPS; i++) {
-		if (keys[i].fastKeyCode == keycode) {
-			if ((GetFocus() == GWnd && GetAsyncKeyState(keys[i].virtualKey) & 0x8000) != 0) {
-				return true;
-			} else {
-				return false;
+extern "C" {
+	bool keyDown_fast(unsigned char keycode) {
+		static int iter = 0;
+		if (iter++ % 1024 == 0) {
+			PumpMessages();
+		}
+
+		for (int i = 0; i < NUM_KEY_MAPS; i++) {
+			if (keys[i].fastKeyCode == keycode) {
+				if ((GetFocus() == GWnd && GetAsyncKeyState(keys[i].virtualKey) & 0x8000) != 0) {
+					return true;
+				} else {
+					return false;
+				}
 			}
 		}
-	}
 
-	return false;
-}
+		return false;
+	}
+};
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // MessageBox
