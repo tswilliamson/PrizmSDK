@@ -136,6 +136,10 @@ void *GetVRAMAddress(void) {
 	return VRAM;
 }
 
+void *GetSecondaryVRAMAddress(void) {
+	return BackgroundVRAM;
+}
+
 void Bdisp_AreaClr(struct display_fill* area, unsigned char target, unsigned short color) {
 	unsigned targetColor = area->mode == 0 ? COLOR_WHITE : color;
 
