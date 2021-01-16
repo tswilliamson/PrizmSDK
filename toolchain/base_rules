@@ -28,3 +28,6 @@ export CXX	:=	$(PREFIX)g++
 export AR	:=	$(PREFIX)ar
 export OBJCOPY	:=	$(PREFIX)objcopy
 
+export	LIBFXCG_INC	:=	$(FXCGSDK)/include
+export	UTILS_INC	:=	$(FXCGSDK)/utils
+export	LIBFXCG_LIB	:=	$(FXCGSDK)/lib

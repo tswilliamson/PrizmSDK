@@ -379,7 +379,7 @@
     <NMakePreprocessorDefinitions>_FXCG_MINICOMPAT;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <NMakeIncludeSearchPath>..\..\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <NMakeReBuildCommandLine>..\clean.bat
-..\make.bat</NMakeReBuildCommandLine>
+make.bat</NMakeReBuildCommandLine>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>

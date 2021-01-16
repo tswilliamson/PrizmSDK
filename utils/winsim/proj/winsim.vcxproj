@@ -10,6 +10,7 @@
     <ClCompile Include="..\..\calctype\src\calctype.c" />
     <ClCompile Include="..\..\calctype\src\calctype_prizm.c" />
     <ClCompile Include="..\..\ptune2_simple\src\Ptune2_direct.c" />
+    <ClCompile Include="..\..\scope_timer\src\scope_timer.cpp" />
     <ClCompile Include="..\..\snd\src\snd_main.cpp" />
     <ClCompile Include="..\..\snd\src\snd_prizm.cpp" />
     <ClCompile Include="..\..\snd\src\snd_sim.cpp" />
@@ -25,6 +26,8 @@
     <ClInclude Include="..\..\calctype\calctype.h" />
     <ClInclude Include="..\..\ptune2_simple\Ptune2_direct.h" />
     <ClInclude Include="..\..\ptune2_simple\src\SH7305_CPG_BSC.h" />
+    <ClInclude Include="..\..\scope_timer\scope_timer.h" />
+    <ClInclude Include="..\..\scope_timer\src\tmu.h" />
     <ClInclude Include="..\..\snd\snd.h" />
     <ClInclude Include="..\..\snd\src\snd_private.h" />
     <ClInclude Include="..\..\zx7\zx7.h" />
@@ -78,7 +81,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;TARGET_WINSIM=1;DEBUG=1</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\zx7;$(ProjectDir)\..\..\calctype;$(ProjectDir)\..\..\ptune2_simple;$(ProjectDir)\..\..\snd;$(ProjectDir)\..\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\zx7;$(ProjectDir)\..\..\calctype;$(ProjectDir)\..\..\ptune2_simple;$(ProjectDir)\..\..\scope_timer;$(ProjectDir)\..\..\snd;$(ProjectDir)\..\..\;$(ProjectDir)\..\</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <SupportJustMyCode>false</SupportJustMyCode>
       <ExceptionHandling>false</ExceptionHandling>

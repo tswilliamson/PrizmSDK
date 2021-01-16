@@ -11,11 +11,11 @@
 
 /* template for syscalls */
 #define SYSCALL_BARE(name, x)   \
-ENTRY(name)         \
-    mov.l   sc_addr, r2 ;   \
-    mov.l   1f, r0 ;    \
-    jmp @r2 ;       \
-    nop ;           \
+ENTRY(name)						\
+    mov.l   sc_addr, r2;		\
+    mov.l   1f, r0;				\
+    jmp @r2;					\
+	nop;						\
 1:  .long x
 
 /* allow to have several calls in one object, by specifying

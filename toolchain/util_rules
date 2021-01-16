@@ -2,10 +2,7 @@ ifeq ($(strip $(FXCGSDK)),)
 $(error "Please set FXCGSDK in your environment. export FXCGSDK=<path to sdk location>)
 endif
 
-include base_rules
-
-export	LIBFXCG_INC	:=	$(FXCGSDK)/include
-
+include $(FXCGSDK)/toolchain/base_rules
 
 #---------------------------------------------------------------------------------
 # path to tools 

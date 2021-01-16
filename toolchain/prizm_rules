@@ -4,10 +4,6 @@ endif
 
 include $(FXCGSDK)/toolchain/base_rules
 
-export	LIBFXCG_INC	:=	$(FXCGSDK)/include
-export	UTILS_INC	:=	$(FXCGSDK)/utils
-export	LIBFXCG_LIB	:=	$(FXCGSDK)/lib
-
 #---------------------------------------------------------------------------------
 # path to tools 
 #---------------------------------------------------------------------------------

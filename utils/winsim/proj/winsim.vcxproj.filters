@@ -28,6 +28,9 @@
     <Filter Include="snd">
       <UniqueIdentifier>{e5154569-96f2-4bc7-ac54-74f7152858c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="scope_timer">
+      <UniqueIdentifier>{59caa838-f3e8-45a4-8171-58574084dbac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\winmain.cpp">
@@ -68,6 +71,9 @@
     </ClCompile>
     <ClCompile Include="..\..\snd\src\snd_main.cpp">
       <Filter>snd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\scope_timer\src\scope_timer.cpp">
+      <Filter>scope_timer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -124,6 +130,12 @@
     </ClInclude>
     <ClInclude Include="..\..\snd\src\snd_private.h">
       <Filter>snd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\scope_timer\scope_timer.h">
+      <Filter>scope_timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\scope_timer\src\tmu.h">
+      <Filter>scope_timer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
