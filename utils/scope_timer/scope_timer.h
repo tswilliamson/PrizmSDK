@@ -35,6 +35,8 @@ struct ScopeTimer {
 	int line;
 	static int fpsValue;
 
+	static void FPSToBuffer(char* buffer);
+
 	ScopeTimer* nextTimer;
 
 	ScopeTimer(const char* withFunctionName, int withLine);

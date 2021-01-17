@@ -30,7 +30,7 @@ unsigned int GetCycleFrameTime() {
 #if TARGET_PRIZM
 	return Ptune2_GetPLLFreq() * 235 * 256 >> Ptune2_GetPFCDiv();
 #else
-	return ScopeTimer_FrameCycles;
+	return ScopeTimer_FrameCycles >> 4;
 #endif
 }
 
@@ -97,17 +97,17 @@ void ScopeTimer::ReportFrame() {
 	unsigned int curFrame = GetCycles();
 	if (lastFrame > curFrame && lastFrame != 0) {
 
-		static int cycleRoll[10] = { 0 };
+		static int cycleRoll[20] = { 0 };
 		static int curCycle = 0;
 		cycleRoll[curCycle++] = lastFrame - curFrame;
-		if (curCycle >= 10) curCycle = 0;
+		if (curCycle >= 20) curCycle = 0;
 
 		int totalCycles = 0;
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 20; i++) {
 			totalCycles += cycleRoll[i];
 		}
 
-		fpsValue = GetCycleFrameTime() * 10 / (totalCycles / 600);
+		fpsValue = GetCycleFrameTime() * 100 / (totalCycles / 1200);
 	}
 
 	lastFrame = curFrame;
@@ -132,6 +132,10 @@ static void PrintInfo(int row, const char* label, const char* info, unsigned sho
 	x = col2;
 	y = row * 15 + 2;
 	CalcType_Draw(&arial_small, info, x, y, color, 0, 0);
+}
+
+void ScopeTimer::FPSToBuffer(char* buffer) {
+	sprintf(buffer, "FPS: %d.%d%d", fpsValue / 100, (fpsValue % 100) / 10, fpsValue % 10);
 }
 
 void ScopeTimer::DisplayTimes() {
@@ -265,7 +269,7 @@ void ScopeTimer::DisplayTimes() {
 		}
 
 		char fpsBuffer[50] = { 0 };
-		sprintf(fpsBuffer, "FPS: %d.%d  ", fpsValue / 10, fpsValue % 10);
+		FPSToBuffer(fpsBuffer);
 		PrintInfo(13, fpsBuffer, "F3: Clear values", COLOR_LIGHTBLUE);
 
 		GetKey(&toKey);
