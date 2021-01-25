@@ -8,6 +8,7 @@
 #include "prizmsim.h"
 #include "prizmfont.h"
 #include <ShlObj.h>
+#include "scope_timer.h"
 
  // DmaWaitNext() should be called before starting another Non-blocking DMA transfer or GetKey().
 bool dma_transfer;
@@ -83,6 +84,28 @@ void CMT_Delay_micros(int units) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Display Generics
 
+struct AdvanceScopeTimer {
+	LONGLONG start;
+	bool isValid;
+
+	AdvanceScopeTimer() {
+		LARGE_INTEGER result;
+		isValid = false;
+		if (QueryPerformanceCounter(&result) != 0) {
+			isValid = true;
+			start = result.QuadPart;
+		}
+	}
+
+	~AdvanceScopeTimer() {
+		LARGE_INTEGER result;
+		if (isValid && QueryPerformanceCounter(&result) != 0) {
+			LONGLONG duration = result.QuadPart - start;
+			ScopeTimer_Start += duration;
+		}
+	}
+};
+
 // the actual CPU side screen buffer
 unsigned short VRAM[216][384] = { 0 };
 
@@ -107,6 +130,9 @@ void LoadVRAM_1() {
 
 void Bdisp_AllClr_VRAM() {
 	memset(VRAM, 0xFF, sizeof(VRAM));
+
+	// scope timer shouldn't could the display cost as this isn't similar to device at all with vsync
+	AdvanceScopeTimer scoped;
 	glutPostRedisplay();
 	glutMainLoopEvent();
 }
@@ -120,6 +146,8 @@ void Bdisp_Fill_VRAM(int color, int mode) {
 }
 
 void Bdisp_PutDisp_DD() {
+	// scope timer shouldn't could the display cost as this isn't similar to device at all with vsync
+	AdvanceScopeTimer scoped;
 	glutPostRedisplay();
 	glutMainLoopEvent();
 }

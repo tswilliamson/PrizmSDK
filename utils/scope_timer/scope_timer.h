@@ -19,7 +19,7 @@ extern LONGLONG ScopeTimer_Start;
 inline unsigned int GetCycles() {
 	LARGE_INTEGER result;
 	if (QueryPerformanceCounter(&result) != 0) {
-		return (unsigned int) (ScopeTimer_Start - result.QuadPart) >> 4;
+		return (unsigned int) (ScopeTimer_Start - result.QuadPart) >> 2;
 	}
 
 	return 0;
@@ -64,10 +64,19 @@ struct ScopeTimer {
 };
 
 struct TimedInstance {
-	unsigned int start;
 	ScopeTimer* myTimer;
+	unsigned int start;
 
-	inline TimedInstance(ScopeTimer* withTimer) : start(GetCycles()), myTimer(withTimer) {
+	inline TimedInstance(ScopeTimer* withTimer) : myTimer(withTimer), start(GetCycles()) {
+	}
+
+	inline void Switch(ScopeTimer* newTimer) {
+		int elapsed = (int)(start - GetCycles());
+		if (elapsed >= 0) {
+			myTimer->AddTime(elapsed);
+		}
+		myTimer = newTimer;
+		start = GetCycles();
 	}
 
 	inline ~TimedInstance() {
@@ -81,6 +90,26 @@ struct TimedInstance {
 
 #define TIME_SCOPE() static ScopeTimer __timer(__FUNCTION__, __LINE__); TimedInstance __timeMe(&__timer);
 #define TIME_SCOPE_NAMED(Name) static ScopeTimer __timer(#Name, __LINE__); TimedInstance __timeMe(&__timer);
+
+// in order to use a scope in a templated function without dupes it needs to be static declared and used instead
+#define DECLARE_EXT_TIME_SCOPE(Name) static ScopeTimer __timer ## Name ( # Name, __LINE__);
+#define EXT_TIME_SCOPE(Name) TimedInstance __timeMe(&__timer##Name);
+
+/* Switches a scope to a new scope mid function. Useful for timing different chunks of code in the same function.
+*  For example, the following function would time DoStuff and Player2Stuff() separately:
+* 
+*  DECLARE_EXT_TIME_SCOPE(RunLogic)
+*  DECLARE_EXT_TIME_SCOPE(RunLogic_Player2)
+*  void MyLogicFn() {
+*     EXT_TIME_SCOPE(RunLogic)
+*     DoStuff();
+*     EXT_TIME_SCOPE_SWITCH(RunLogic_Player2)
+*     Player2Stuff()
+*  }
+*/
+#define EXT_TIME_SCOPE_SWITCH(Name) __timeMe.Switch(&__timer##Name);
+
+
 #else
 struct ScopeTimer {
 	static void InitSystem() {}

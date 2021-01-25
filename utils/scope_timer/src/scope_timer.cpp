@@ -30,7 +30,7 @@ unsigned int GetCycleFrameTime() {
 #if TARGET_PRIZM
 	return Ptune2_GetPLLFreq() * 235 * 256 >> Ptune2_GetPFCDiv();
 #else
-	return ScopeTimer_FrameCycles >> 4;
+	return ScopeTimer_FrameCycles >> 2;
 #endif
 }
 
@@ -211,7 +211,7 @@ void ScopeTimer::DisplayTimes() {
 	}
 
 	int startTimer = 0;
-	int mode = 0;
+	int mode = 3;
 
 	do {
 		// create stat display
@@ -252,9 +252,24 @@ void ScopeTimer::DisplayTimes() {
 					isMax = curTimer->numCounts == maxCount;
 					break;
 				case 3:
-					if (curTimer->numCounts)
-						sprintf(info, "%d", curTimer->cycleCount / curTimer->numCounts);
-					else
+					if (curTimer->numCounts) {
+						// 3 digits
+						int cycleCount = curTimer->cycleCount;
+						int numCounts = curTimer->numCounts;
+
+						// handle overflow
+						while (cycleCount > 2 * 1024 * 1024) {
+							cycleCount /= 10;
+							numCounts /= 10;
+						}
+
+						int result = cycleCount * 1000 / numCounts;
+						int dec0 = (result % 1000) / 100;
+						int dec1 = (result % 100) / 10;
+						int dec2 = (result % 10);
+
+						sprintf(info, "%d.%d%d%d", result / 1000, dec0, dec1, dec2);
+					} else
 						strcpy(info, "N/A");
 					isMax = false;
 					break;
