@@ -211,7 +211,7 @@ void ScopeTimer::DisplayTimes() {
 	}
 
 	int startTimer = 0;
-	int mode = 3;
+	int mode = 0;
 
 	do {
 		// create stat display
@@ -254,19 +254,19 @@ void ScopeTimer::DisplayTimes() {
 				case 3:
 					if (curTimer->numCounts) {
 						// 3 digits
-						int cycleCount = curTimer->cycleCount;
-						int numCounts = curTimer->numCounts;
+						unsigned int cycleCount = curTimer->cycleCount;
+						unsigned int numCounts = curTimer->numCounts;
 
 						// handle overflow
 						while (cycleCount > 2 * 1024 * 1024) {
-							cycleCount /= 10;
-							numCounts /= 10;
+							cycleCount /= 16;
+							numCounts /= 16;
 						}
 
-						int result = cycleCount * 1000 / numCounts;
-						int dec0 = (result % 1000) / 100;
-						int dec1 = (result % 100) / 10;
-						int dec2 = (result % 10);
+						unsigned int result = cycleCount * 1000 / numCounts;
+						unsigned int dec0 = (result % 1000) / 100;
+						unsigned int dec1 = (result % 100) / 10;
+						unsigned int dec2 = (result % 10);
 
 						sprintf(info, "%d.%d%d%d", result / 1000, dec0, dec1, dec2);
 					} else
