@@ -92,7 +92,7 @@ struct TimedInstance {
 #define TIME_SCOPE_NAMED(Name) static ScopeTimer __timer(#Name, __LINE__); TimedInstance __timeMe(&__timer);
 
 // in order to use a scope in a templated function without dupes it needs to be static declared and used instead
-#define DECLARE_EXT_TIME_SCOPE(Name) ScopeTimer  __attribute__ ((used)) __timer ## Name ( # Name, __LINE__);
+#define DECLARE_EXT_TIME_SCOPE(Name) ScopeTimer __timer ## Name ( # Name, __LINE__);
 #define EXT_TIME_SCOPE(Name) TimedInstance __timeMe(&__timer##Name);
 #define REGISTER_EXT_TIME_SCOPE(Name) extern ScopeTimer __timer ## Name ; __timer ## Name .Register( # Name );
 
